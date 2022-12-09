@@ -1,0 +1,12 @@
+main(); {
+char a; //random comment
+int i;
+char b;
+string c;
+while (length(c) < 7) c = c+a+b;
+i = length(c);
+print(i); /*another random comment*/
+proc length(string x) {
+return 10;
+};
+}
