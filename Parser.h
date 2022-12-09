@@ -21,6 +21,7 @@ class Parser
 {
 	Table<Token> stream;
 	vector<Variable> variables;
+	vector<vector<Variable>> variablesStore;
 
 	vector<int> streamStore;
 
@@ -32,45 +33,48 @@ class Parser
 	string LOGIC_OPERATORS[6] = { "<", ">", "<=", ">=", "!=", "=="};
 
 	//
-	// Âñïîìîãàòåëüíûå ìåòîäû 
+	// Ğ’ÑĞ¿Ğ¾Ğ¼Ğ¾Ğ³Ğ°Ñ‚ĞµĞ»ÑŒĞ½Ñ‹Ğµ Ğ¼ĞµÑ‚Ğ¾Ğ´Ñ‹ 
 	//
 
-	// Âûâîä îøèáêè
+	// Ğ’Ñ‹Ğ²Ğ¾Ğ´ Ğ¾ÑˆĞ¸Ğ±ĞºĞ¸
 	void ErrorOnToken(Token t, string message) {
 		throw SyntaxError(message, t.get_line_number());
 	}
 
-	// Çàïîìèíàåò ñîñòîÿíèå ïîòîêà/äåğåâà
+	// Ğ—Ğ°Ğ¿Ğ¾Ğ¼Ğ¸Ğ½Ğ°ĞµÑ‚ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ Ğ¿Ğ¾Ñ‚Ğ¾ĞºĞ°/Ğ´ĞµÑ€ĞµĞ²Ğ°
 	void store() {
  		treeStore.push_back(tree);
 		streamStore.push_back(stream.getIterrator());
+		variablesStore.push_back(variables);
 	}
 
-	// Óäàëÿåò ñîñòîíèå ïîòîêà/äåğåâà
+	// Ğ£Ğ´Ğ°Ğ»ÑĞµÑ‚ ÑĞ¾ÑÑ‚Ğ¾Ğ½Ğ¸Ğµ Ğ¿Ğ¾Ñ‚Ğ¾ĞºĞ°/Ğ´ĞµÑ€ĞµĞ²Ğ°
 	void dropStore() {
 		streamStore.pop_back();
 		treeStore.pop_back();
+		variablesStore.pop_back();
 	}
 
-	// Âîñòàíàâëèâàåò ñîñòîÿíèå ïîòîêà/äåğåâà
+	// Ğ’Ğ¾ÑÑ‚Ğ°Ğ½Ğ°Ğ²Ğ»Ğ¸Ğ²Ğ°ĞµÑ‚ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ğµ Ğ¿Ğ¾Ñ‚Ğ¾ĞºĞ°/Ğ´ĞµÑ€ĞµĞ²Ğ°
 	void restore() {
 		stream.seek(streamStore.back());
 		tree.free();
 		tree = treeStore.back();
-		
+		variables = variablesStore.back();
+
 		dropStore();
 	}
 
-	// Äîáàâëåíèå ïåğåìåííîé â òàáëèöó
+	// Ğ”Ğ¾Ğ±Ğ°Ğ²Ğ»ĞµĞ½Ğ¸Ğµ Ğ¿ĞµÑ€ĞµĞ¼ĞµĞ½Ğ½Ğ¾Ğ¹ Ğ² Ñ‚Ğ°Ğ±Ğ»Ğ¸Ñ†Ñƒ
 	void addVariable(string type, string name) {
 		Variable var = Variable(name, type);
 
-		if (checkVariableExists(name)) throw SematnicError(format("Èäåíòèôèêàòîğ \033[30;35m{}\033[30;0m îïğåäåëåí ğàíåå", name), stream.getCurrentLine());
+		if (checkVariableExists(name)) throw SematnicError(format("Ğ˜Ğ´ĞµĞ½Ñ‚Ğ¸Ñ„Ğ¸ĞºĞ°Ñ‚Ğ¾Ñ€ \033[30;35m{}\033[30;0m Ğ¾Ğ¿Ñ€ĞµĞ´ĞµĞ»ĞµĞ½ Ñ€Ğ°Ğ½ĞµĞµ", name), stream.getCurrentLine());
 
 		variables.push_back(var);
 	}
 
-	// Ïğîâåğêà ñóùåñòâîâàíèÿ ïåğìåííîé â òàáëèöå
+	// ĞŸÑ€Ğ¾Ğ²ĞµÑ€ĞºĞ° ÑÑƒÑ‰ĞµÑÑ‚Ğ²Ğ¾Ğ²Ğ°Ğ½Ğ¸Ñ Ğ¿ĞµÑ€Ğ¼ĞµĞ½Ğ½Ğ¾Ğ¹ Ğ² Ñ‚Ğ°Ğ±Ğ»Ğ¸Ñ†Ğµ
 	bool checkVariableExists(string name) {
 		for (auto var : variables) {
 			if (var.get_name() == name) return true;
@@ -80,57 +84,57 @@ class Parser
 	}
 
 	//
-	// Âñïîìîãàòåëüíûå ìåòîäû äëÿ ğàáîòû ñ ëåêñåìàìè
+	// Ğ’ÑĞ¿Ğ¾Ğ¼Ğ¾Ğ³Ğ°Ñ‚ĞµĞ»ÑŒĞ½Ñ‹Ğµ Ğ¼ĞµÑ‚Ğ¾Ğ´Ñ‹ Ğ´Ğ»Ñ Ñ€Ğ°Ğ±Ğ¾Ñ‚Ñ‹ Ñ Ğ»ĞµĞºÑĞµĞ¼Ğ°Ğ¼Ğ¸
 	//
 
-	// Ñëåäóşùàÿ ëåêñåìà
+	// Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ°Ñ Ğ»ĞµĞºÑĞµĞ¼Ğ°
 	void nextLexem(string name)
 	{
 		Token token = stream.get();
-		if (token != name) ErrorOnToken(token, format("Îæèäàëîñü {}", name));
+		if (token != name) ErrorOnToken(token, format("ĞĞ¶Ğ¸Ğ´Ğ°Ğ»Ğ¾ÑÑŒ {}", name));
 	}
 
-	// Ñëåäóşùèé òèï ëåêñåìû
+	// Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ¸Ğ¹ Ñ‚Ğ¸Ğ¿ Ğ»ĞµĞºÑĞµĞ¼Ñ‹
 	void nextLexemType(int lexemType)
 	{
 		Token token = stream.get();
-		string lexemTypesName[] = {"Èäåíòèôèêàòîğ", "Êëş÷åâîå ñëîâî", "Ğàçäåëèòåëü", "×èñëîâàÿ êîíñòàíòà"};
-		if (token.get_type() != lexemType) ErrorOnToken(token, format("Îæèäàëîñü {}", lexemTypesName[lexemType]));
+		string lexemTypesName[] = {"Ğ˜Ğ´ĞµĞ½Ñ‚Ğ¸Ñ„Ğ¸ĞºĞ°Ñ‚Ğ¾Ñ€", "ĞšĞ»ÑÑ‡ĞµĞ²Ğ¾Ğµ ÑĞ»Ğ¾Ğ²Ğ¾", "Ğ Ğ°Ğ·Ğ´ĞµĞ»Ğ¸Ñ‚ĞµĞ»ÑŒ", "Ğ§Ğ¸ÑĞ»Ğ¾Ğ²Ğ°Ñ ĞºĞ¾Ğ½ÑÑ‚Ğ°Ğ½Ñ‚Ğ°"};
+		if (token.get_type() != lexemType) ErrorOnToken(token, format("ĞĞ¶Ğ¸Ğ´Ğ°Ğ»Ğ¾ÑÑŒ {}", lexemTypesName[lexemType]));
 	}
 
-	// Ñëåäóşùèé òèï
+	// Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ¸Ğ¹ Ñ‚Ğ¸Ğ¿
 	void nextType()
 	{
 		Token token = stream.get();
-		if (!contains(TYPES, token.get_name())) ErrorOnToken(token, "Îæèäàëñÿ òèï");
+		if (!contains(TYPES, token.get_name())) ErrorOnToken(token, "ĞĞ¶Ğ¸Ğ´Ğ°Ğ»ÑÑ Ñ‚Ğ¸Ğ¿");
 	}
 
-	// Ñëåäóşùèé èäåíòèôèêàòîğ
+	// Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ¸Ğ¹ Ğ¸Ğ´ĞµĞ½Ñ‚Ğ¸Ñ„Ğ¸ĞºĞ°Ñ‚Ğ¾Ñ€
 	void nextIdentifier()
 	{
 		Token token = stream.get();
-		if (token.get_type() != IDENTIFIER) ErrorOnToken(token, "Îæèäàëñÿ èäåíòèôèêàòîğ");
+		if (token.get_type() != IDENTIFIER) ErrorOnToken(token, "ĞĞ¶Ğ¸Ğ´Ğ°Ğ»ÑÑ Ğ¸Ğ´ĞµĞ½Ñ‚Ğ¸Ñ„Ğ¸ĞºĞ°Ñ‚Ğ¾Ñ€");
 	}
 
-	// Ñëåäóşùèé ìàò. îïåğàòîğ
+	// Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ¸Ğ¹ Ğ¼Ğ°Ñ‚. Ğ¾Ğ¿ĞµÑ€Ğ°Ñ‚Ğ¾Ñ€
 	void nextMathOperator()
 	{
 		Token token = stream.get();
-		if (!contains(MATH_OPERATORS, token.get_name())) ErrorOnToken(token, "Îæèäàëñÿ ìàò. îïåğàòîğ");
+		if (!contains(MATH_OPERATORS, token.get_name())) ErrorOnToken(token, "ĞĞ¶Ğ¸Ğ´Ğ°Ğ»ÑÑ Ğ¼Ğ°Ñ‚. Ğ¾Ğ¿ĞµÑ€Ğ°Ñ‚Ğ¾Ñ€");
 	}
 
-	// Ñëåäóşùèé ëîã. îïåğàòîğ
+	// Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ¸Ğ¹ Ğ»Ğ¾Ğ³. Ğ¾Ğ¿ĞµÑ€Ğ°Ñ‚Ğ¾Ñ€
 	void nextLogicOperator()
 	{
 		Token token = stream.get();
-		if (!contains(LOGIC_OPERATORS, token.get_name())) ErrorOnToken(token, "Îæèäàëñÿ ëîãè÷åñêèé îïåğàòîğ");
+		if (!contains(LOGIC_OPERATORS, token.get_name())) ErrorOnToken(token, "ĞĞ¶Ğ¸Ğ´Ğ°Ğ»ÑÑ Ğ»Ğ¾Ğ³Ğ¸Ñ‡ĞµÑĞºĞ¸Ğ¹ Ğ¾Ğ¿ĞµÑ€Ğ°Ñ‚Ğ¾Ñ€");
 	}
 
 	//
-	// Îáğàáîòêà ïğàâèë ãğàììàòèêè
+	// ĞĞ±Ñ€Ğ°Ğ±Ğ¾Ñ‚ĞºĞ° Ğ¿Ñ€Ğ°Ğ²Ğ¸Ğ» Ğ³Ñ€Ğ°Ğ¼Ğ¼Ğ°Ñ‚Ğ¸ĞºĞ¸
 	//
 
-	// <S> = “main” ”(” “)” “;” “{”<ÎÏÅĞÀÖÈÈ>”}”
+	// <S> = â€œmainâ€ â€(â€ â€œ)â€ â€œ;â€ â€œ{â€<ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ˜>â€}â€
 	void S(void)
 	{
 		tree.down("<S>", stream.getCurrentLine());
@@ -146,9 +150,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ÎÏÅĞÀÖÈÈ> = <ÎÏÅĞÀÖÈß>”;”<ÎÏÅĞÀÖÈÈ>”;” | <ÎÏÅĞÀÖÈß>”;”
+	// <ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ˜> = <ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ¯>â€;â€<ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ˜>â€;â€ | <ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ¯>â€;â€
 	void Operations(){
-		tree.down("<ÎÏÅĞÀÖÈÈ>", stream.getCurrentLine());
+		tree.down("<ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ˜>", stream.getCurrentLine());
 
 		store();
 
@@ -168,13 +172,13 @@ class Parser
 		tree.up();
 	}
 
-	// <ÎÏÅĞÀÖÈß> = <ÎÁÚßÂËÅÍÈÅ ÏÅĞÅÌÅÍÍÛÕ> | <ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ> | <ÏĞÈÑÂÎÅÍÈÅ> | <ÂÛÇÎÂ> | <ÖÈÊË>
+	// <ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ¯> = <ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• ĞŸĞ•Ğ Ğ•ĞœĞ•ĞĞĞ«Ğ¥> | <ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• Ğ¤Ğ£ĞĞšĞ¦Ğ˜Ğ˜> | <ĞŸĞ Ğ˜Ğ¡Ğ’ĞĞ•ĞĞ˜Ğ•> | <Ğ’Ğ«Ğ—ĞĞ’> | <Ğ¦Ğ˜ĞšĞ›>
 	void Operation() {
-		tree.down("<ÎÏÅĞÀÖÈß>", stream.getCurrentLine());
+		tree.down("<ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ¯>", stream.getCurrentLine());
 		
 		store();
 
-		// <ÎÁÚßÂËÅÍÈÅ ÏÅĞÅÌÅÍÍÛÕ>
+		// <ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• ĞŸĞ•Ğ Ğ•ĞœĞ•ĞĞĞ«Ğ¥>
 		try {
 			VariableDefine();
 
@@ -185,7 +189,7 @@ class Parser
 
 		store();
 
-		// <ÏĞÈÑÂÎÅÍÈÅ>
+		// <ĞŸĞ Ğ˜Ğ¡Ğ’ĞĞ•ĞĞ˜Ğ•>
 		try {
 			Assignment();
 
@@ -196,7 +200,7 @@ class Parser
 
 		store();
 
-		// <ÖÈÊË>
+		// <Ğ¦Ğ˜ĞšĞ›>
 		try {
 			While();
 
@@ -206,7 +210,7 @@ class Parser
 		catch (SyntaxError err) { restore(); };
 
 		store();
-		// <ÂÛÇÎÂ>
+		// <Ğ’Ğ«Ğ—ĞĞ’>
 		try {
 			Call();
 
@@ -215,15 +219,15 @@ class Parser
 		}
 		catch (SyntaxError err) { restore(); };
 
-		// <ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ>
+		// <ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• Ğ¤Ğ£ĞĞšĞ¦Ğ˜Ğ˜>
 		FunctionDefine();
 		
 		tree.up();
 	}
 
-	// <ÖÈÊË> = “while””(”<ËÎÃÈ×ÅÑÊÀß ÎÏÅĞÀÖÈß>”)”<ÎÏÅĞAÖÈß>”;”
+	// <Ğ¦Ğ˜ĞšĞ›> = â€œwhileâ€â€(â€<Ğ›ĞĞ“Ğ˜Ğ§Ğ•Ğ¡ĞšĞĞ¯ ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ¯>â€)â€<ĞĞŸĞ•Ğ AĞ¦Ğ˜Ğ¯>â€;â€
 	void While() {
-		tree.down("<ÖÈÊË>", stream.getCurrentLine());
+		tree.down("<Ğ¦Ğ˜ĞšĞ›>", stream.getCurrentLine());
 
 		nextLexem("while");
 		nextLexem("(");
@@ -234,9 +238,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ËÎÃÈ×ÅÑÊÀß ÎÏÅĞÀÖÈß> = <ÎÏÅĞÀÍÄ><ËÎÃÈ×ÅÑÊÈÉ ÎÏÅĞÀÒÎĞ><ÎÏÅĞÀÍÄ>
+	// <Ğ›ĞĞ“Ğ˜Ğ§Ğ•Ğ¡ĞšĞĞ¯ ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ¯> = <ĞĞŸĞ•Ğ ĞĞĞ”><Ğ›ĞĞ“Ğ˜Ğ§Ğ•Ğ¡ĞšĞ˜Ğ™ ĞĞŸĞ•Ğ ĞĞ¢ĞĞ ><ĞĞŸĞ•Ğ ĞĞĞ”>
 	void LogicExpression() {
-		tree.down("<ËÎÃÈ×ÅÑÊÀß ÎÏÅĞÀÖÈß>", stream.getCurrentLine());
+		tree.down("<Ğ›ĞĞ“Ğ˜Ğ§Ğ•Ğ¡ĞšĞĞ¯ ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ¯>", stream.getCurrentLine());
 
 		Operand();
 		nextLogicOperator();
@@ -245,9 +249,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ÎÁÚßÂËÅÍÈÅ ÏÅĞÅÌÅÍÍÛÕ> = <ÒÈÏ><ÈÄÅÍÒÈÔÈÊÀÒÎĞ>
+	// <ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• ĞŸĞ•Ğ Ğ•ĞœĞ•ĞĞĞ«Ğ¥> = <Ğ¢Ğ˜ĞŸ><Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >
 	void VariableDefine() {
-		tree.down("<ÎÁÚßÂËÅÍÈÅ ÏÅĞÅÌÅÍÍÎÉ>", stream.getCurrentLine());
+		tree.down("<ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• ĞŸĞ•Ğ Ğ•ĞœĞ•ĞĞĞĞ™>", stream.getCurrentLine());
 
 		Token type = stream.get();
 		Token identifyer = stream.get();
@@ -261,9 +265,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ> = “proc”<ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”(”< ÏÎÑËÅÄ. ÏĞÈÍ. ÀĞÃÓÌÅÍÒÎÂ> ”)” ”{“ <ÎÏÅĞÀÖÈÈ><ÂÎÇÂĞÀÒ>”}” | “proc”<ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”(”< ÏÎÑËÅÄ. ÏĞÈÍ. ÀĞÃÓÌÅÍÒÎÂ>”)””{“<ÂÎÇÂĞÀÒ>”}”
+	// <ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• Ğ¤Ğ£ĞĞšĞ¦Ğ˜Ğ˜> = â€œprocâ€<Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >â€(â€< ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ Ğ˜Ğ. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’> â€)â€ â€{â€œ <ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ˜><Ğ’ĞĞ—Ğ’Ğ ĞĞ¢>â€}â€ | â€œprocâ€<Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >â€(â€< ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ Ğ˜Ğ. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>â€)â€â€{â€œ<Ğ’ĞĞ—Ğ’Ğ ĞĞ¢>â€}â€
 	void FunctionDefine() {
-		tree.down("<ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ>", stream.getCurrentLine());
+		tree.down("<ĞĞ‘ĞªĞ¯Ğ’Ğ›Ğ•ĞĞ˜Ğ• Ğ¤Ğ£ĞĞšĞ¦Ğ˜Ğ˜>", stream.getCurrentLine());
 
 		nextLexem("proc");
 		nextIdentifier();
@@ -275,7 +279,7 @@ class Parser
 		nextLexem("{");
 
 		store();
-		// <ÎÏÅĞÀÖÈÈ>
+		// <ĞĞŸĞ•Ğ ĞĞ¦Ğ˜Ğ˜>
 		try {
 			Operations();
 			dropStore();
@@ -290,13 +294,13 @@ class Parser
 		tree.up();
 	}
 
-	// <ÏÎÑËÅÄ. ÏĞÈÍ. ÀĞÃÓÌÅÍÒÎÂ> = <ÏĞÈÍ. ÀĞÃÓÌÅÍÒ>|< ÏĞÈÍ. ÀĞÃÓÌÅÍÒ>”,”<ÏÎÑËÅÄ. ÏĞÈÍ. ÀĞÃÓÌÅÍÒÎÂ>
+	// <ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ Ğ˜Ğ. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’> = <ĞŸĞ Ğ˜Ğ. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢>|< ĞŸĞ Ğ˜Ğ. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢>â€,â€<ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ Ğ˜Ğ. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>
 	void AcceptedArguments() {
-		tree.down("<ÏÎÑËÅÄ. ÏĞÈÍ. ÀĞÃÓÌÅÍÒÎÂ>", stream.getCurrentLine());
+		tree.down("<ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ Ğ˜Ğ. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>", stream.getCurrentLine());
 
 		store();
 
-		// <ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”,”<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>
+		// <Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >â€,â€<ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ•Ğ Ğ•Ğ”. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>
 		try {
 			nextType();
 			nextIdentifier();
@@ -315,9 +319,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ÂÎÇÂĞÀÒ> = “return” ” “ <ÎÏÅĞÀÍÄ>
+	// <Ğ’ĞĞ—Ğ’Ğ ĞĞ¢> = â€œreturnâ€ â€ â€œ <ĞĞŸĞ•Ğ ĞĞĞ”>
 	void Return() {
-		tree.down("<ÂÎÇÂĞÀÒ>", stream.getCurrentLine());
+		tree.down("<Ğ’ĞĞ—Ğ’Ğ ĞĞ¢>", stream.getCurrentLine());
 		
 		nextLexem("return");
 		Operand();
@@ -325,9 +329,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ÏĞÈÑÂÎÅÍÈÅ> = <ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”=”<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>
+	// <ĞŸĞ Ğ˜Ğ¡Ğ’ĞĞ•ĞĞ˜Ğ•> = <Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >â€=â€<Ğ’Ğ«Ğ§Ğ˜Ğ¡Ğ›Ğ¯Ğ•ĞœĞĞ• Ğ—ĞĞĞ§Ğ•ĞĞ˜Ğ•>
 	void Assignment() {
-		tree.down("<ÏĞÈÑÂÎÅÍÈÅ>", stream.getCurrentLine());
+		tree.down("<ĞŸĞ Ğ˜Ğ¡Ğ’ĞĞ•ĞĞ˜Ğ•>", stream.getCurrentLine());
 
 		nextIdentifier();
 		nextLexem("=");
@@ -336,13 +340,13 @@ class Parser
 		tree.up();
 	}
 
-	// <ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ> = <ÂÛÇÎÂ> | <ÎÏÅĞÀÍÄ><ÌÀÒ. ÎÏÅĞÀÒÎĞ><ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>|<ÎÏÅĞÀÍÄ>
+	// <Ğ’Ğ«Ğ§Ğ˜Ğ¡Ğ›Ğ¯Ğ•ĞœĞĞ• Ğ—ĞĞĞ§Ğ•ĞĞ˜Ğ•> = <Ğ’Ğ«Ğ—ĞĞ’> | <ĞĞŸĞ•Ğ ĞĞĞ”><ĞœĞĞ¢. ĞĞŸĞ•Ğ ĞĞ¢ĞĞ ><Ğ’Ğ«Ğ§Ğ˜Ğ¡Ğ›Ğ¯Ğ•ĞœĞĞ• Ğ—ĞĞĞ§Ğ•ĞĞ˜Ğ•>|<ĞĞŸĞ•Ğ ĞĞĞ”>
 	void Expression() {
-		tree.down("<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>", stream.getCurrentLine());
+		tree.down("<Ğ’Ğ«Ğ§Ğ˜Ğ¡Ğ›Ğ¯Ğ•ĞœĞĞ• Ğ—ĞĞĞ§Ğ•ĞĞ˜Ğ•>", stream.getCurrentLine());
 
 		store();
 
-		// <ÂÛÇÎÂ>
+		// <Ğ’Ğ«Ğ—ĞĞ’>
 		try {
 			Call();
 
@@ -353,7 +357,7 @@ class Parser
 
 		store();
 
-		// <ÎÏÅĞÀÍÄ><ÌÀÒ. ÎÏÅĞÀÒÎĞ><ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>
+		// <ĞĞŸĞ•Ğ ĞĞĞ”><ĞœĞĞ¢. ĞĞŸĞ•Ğ ĞĞ¢ĞĞ ><Ğ’Ğ«Ğ§Ğ˜Ğ¡Ğ›Ğ¯Ğ•ĞœĞĞ• Ğ—ĞĞĞ§Ğ•ĞĞ˜Ğ•>
 		try {
 			Operand();
 			nextMathOperator();
@@ -369,9 +373,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ÎÏÅĞÀÍÄ> = <ÏÎÑËÅÄ. ÖÈÔĞ> | <ÈÄÅÍÒÈÔÈÊÀÒÎĞ> | <ÂÛÇÎÂ>
+	// <ĞĞŸĞ•Ğ ĞĞĞ”> = <ĞŸĞĞ¡Ğ›Ğ•Ğ”. Ğ¦Ğ˜Ğ¤Ğ > | <Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ > | <Ğ’Ğ«Ğ—ĞĞ’>
 	void Operand() {
-		tree.down("<ÎÏÅĞÀÍÄ>", stream.getCurrentLine());
+		tree.down("<ĞĞŸĞ•Ğ ĞĞĞ”>", stream.getCurrentLine());
 
 		Token token = stream.get();
 		
@@ -398,9 +402,9 @@ class Parser
 	}
 
 
-	// <ÂÛÇÎÂ> = <ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”(”<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>”)”
+	// <Ğ’Ğ«Ğ—ĞĞ’> = <Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >â€(â€<ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ•Ğ Ğ•Ğ”. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>â€)â€
 	void Call() {
-		tree.down("<ÂÛÇÎÂ>", stream.getCurrentLine());
+		tree.down("<Ğ’Ğ«Ğ—ĞĞ’>", stream.getCurrentLine());
 		nextIdentifier();
 		nextLexem("(");
 		PassedArguments();
@@ -408,13 +412,13 @@ class Parser
 		tree.up();
 	}
 
-	// <ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ> = <ÈÄÅÍÒÈÔÈÊÀÒÎĞ>|<ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”,”<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>
+	// <ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ•Ğ Ğ•Ğ”. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’> = <Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >|<Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >â€,â€<ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ•Ğ Ğ•Ğ”. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>
 	void PassedArguments() {
-		tree.down("<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>", stream.getCurrentLine());
+		tree.down("<ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ•Ğ Ğ•Ğ”. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>", stream.getCurrentLine());
 
 		store();
 
-		// <ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”,”<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>
+		// <Ğ˜Ğ”Ğ•ĞĞ¢Ğ˜Ğ¤Ğ˜ĞšĞĞ¢ĞĞ >â€,â€<ĞŸĞĞ¡Ğ›Ğ•Ğ”. ĞŸĞ•Ğ Ğ•Ğ”. ĞĞ Ğ“Ğ£ĞœĞ•ĞĞ¢ĞĞ’>
 		try {
 			nextIdentifier();
 			nextLexem(",");
@@ -441,7 +445,7 @@ public:
 	}
 
 	void printVariablesTable() {
-		cout << setw(10) << "Òèï" << setw(20) << "Èäåíòèôèêàòîğ" << endl;
+		cout << setw(10) << "Ğ¢Ğ¸Ğ¿" << setw(20) << "Ğ˜Ğ´ĞµĞ½Ñ‚Ğ¸Ñ„Ğ¸ĞºĞ°Ñ‚Ğ¾Ñ€" << endl;
 
 		for (auto var : variables)
 			cout <<  setw(10) << var.get_type() << setw(20) << var.get_name() << endl;
