@@ -40,19 +40,19 @@ class Parser
 		throw SyntaxError(message, t.get_line_number());
 	}
 
-	// Запоминает состояние потока
+	// Запоминает состояние потока/дерева
 	void store() {
  		treeStore.push_back(tree);
 		streamStore.push_back(stream.getIterrator());
 	}
 
-	// Запоминает состояние потока
+	// Удаляет состоние потока/дерева
 	void dropStore() {
 		streamStore.pop_back();
 		treeStore.pop_back();
 	}
 
-	// Востанавливает состояние потока
+	// Востанавливает состояние потока/дерева
 	void restore() {
 		stream.seek(streamStore.back());
 		tree.free();
@@ -61,6 +61,7 @@ class Parser
 		dropStore();
 	}
 
+	// Добавление переменной в таблицу
 	void addVariable(string type, string name) {
 		Variable var = Variable(name, type);
 
@@ -69,6 +70,7 @@ class Parser
 		variables.push_back(var);
 	}
 
+	// Проверка существования перменной в таблице
 	bool checkVariableExists(string name) {
 		for (auto var : variables) {
 			if (var.get_name() == name) return true;
