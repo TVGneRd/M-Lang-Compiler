@@ -31,6 +31,10 @@ class Parser
 	string MATH_OPERATORS[4] = { "+", "-", "*", "/"};
 	string LOGIC_OPERATORS[6] = { "<", ">", "<=", ">=", "!=", "=="};
 
+	//
+	// ¬спомогательные методы 
+	//
+
 	// ¬ывод ошибки
 	void ErrorOnToken(Token t, string message) {
 		throw SyntaxError(message, t.get_line_number());
@@ -72,6 +76,10 @@ class Parser
 
 		return false;
 	}
+
+	//
+	// ¬спомогательные методы дл€ работы с лексемами
+	//
 
 	// —ледующа€ лексема
 	void nextLexem(string name)
@@ -115,6 +123,10 @@ class Parser
 		Token token = stream.get();
 		if (!contains(LOGIC_OPERATORS, token.get_name())) ErrorOnToken(token, "ќжидалс€ логический оператор");
 	}
+
+	//
+	// ќбработка правил грамматики
+	//
 
 	// <S> = УmainФ Ф(Ф У)Ф У;Ф У{Ф<ќѕ≈–ј÷»»>Ф}Ф
 	void S(void)
