@@ -37,16 +37,16 @@ public:
 	void addOperation(Node* operation) {
 		string name = operation->getName();
 
-		if (operation->getName() == "<ÎÏÅÐÀÖÈÈ>" || operation->getName() == "<ÎÏÅÐÀÖÈß>") {
+		if (name == "<ÎÏÅÐÀÖÈÈ>" || name == "<ÎÏÅÐÀÖÈß>") {
 			for (auto el : operation->getNext()) addOperation(el);
 		}
 
-		else if (operation->getName() == "<ËÎÃÈ×ÅÑÊÀß ÎÏÅÐÀÖÈß>") {
-			operations.push_back(new LogicExpression(nullptr, operation));
+		else if (name == "<ËÎÃÈ×ÅÑÊÀß ÎÏÅÐÀÖÈß>") {
+			operations.push_back(new LogicExpression(operation));
 		} 
 
-		else if (operation->getName() == "<ÖÈÊË>") {
-			operations.push_back(new While(nullptr, operation));
+		else if (name == "<ÖÈÊË>") {
+			operations.push_back(new While(operation));
 		}
 
 		else {
