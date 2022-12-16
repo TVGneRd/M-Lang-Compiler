@@ -46,6 +46,10 @@ public:
 		return next;
 	}
 
+	Node* getFirst() {
+		return next[0];
+	}
+
 	Node* getPrev() {
 		return prev;
 	}

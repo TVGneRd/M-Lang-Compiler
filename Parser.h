@@ -91,42 +91,43 @@ class Parser
 	void nextLexem(string name)
 	{
 		Token token = stream.get();
-		if (token != name) ErrorOnToken(token, format("Ожидалось {}", name));
-	}
 
-	// Следующий тип лексемы
-	void nextLexemType(int lexemType)
-	{
-		Token token = stream.get();
-		string lexemTypesName[] = {"Идентификатор", "Ключевое слово", "Разделитель", "Числовая константа"};
-		if (token.get_type() != lexemType) ErrorOnToken(token, format("Ожидалось {}", lexemTypesName[lexemType]));
+		if (token != name) ErrorOnToken(token, format("Ожидалось {}", name));
 	}
 
 	// Следующий тип
 	void nextType()
 	{
 		Token token = stream.get();
+
 		if (!contains(TYPES, token.get_name())) ErrorOnToken(token, "Ожидался тип");
 	}
 
 	// Следующий идентификатор
 	void nextIdentifier()
 	{
+		tree.down("ID: " + stream.getCurrentElement()->get_name(), stream.getCurrentElement()); tree.up();
 		Token token = stream.get();
+		
 		if (token.get_type() != IDENTIFIER) ErrorOnToken(token, "Ожидался идентификатор");
 	}
 
 	// Следующий мат. оператор
 	void nextMathOperator()
 	{
+		tree.down("Мат. оператор: " + stream.getCurrentElement()->get_name(), stream.getCurrentElement()); tree.up();
 		Token token = stream.get();
+
 		if (!contains(MATH_OPERATORS, token.get_name())) ErrorOnToken(token, "Ожидался мат. оператор");
 	}
 
 	// Следующий лог. оператор
 	void nextLogicOperator()
 	{
+		tree.down("Логический оператор: " + stream.getCurrentElement()->get_name(), stream.getCurrentElement()); tree.up();
+
 		Token token = stream.get();
+
 		if (!contains(LOGIC_OPERATORS, token.get_name())) ErrorOnToken(token, "Ожидался логический оператор");
 	}
 

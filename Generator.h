@@ -18,7 +18,7 @@ class Generator
 
 public:
 	Tree tree;
-	vector <GeneratorStruct> lexems;
+	vector <Operation*> operations;
 
 	Generator(Tree *tree) {
 		this->tree = *tree;
@@ -28,9 +28,29 @@ public:
 
 	}
 
-	void genarate() {
-		defineSubProcess();
+	void generate() {
+		Node* mainOperaion = tree.getRoot()->getFirst()->getFirst()->getFirst(); // ROOT -> <S> -> <ÎÏÅĞÀÖÈÈ>
+		
+		addOperation(mainOperaion);
+	}
 
-		Node* mainOperaions = tree.getRoot()->getNext()[0]->getNext()[0]->getNext()[0]; // ROOT -> <S> -> <ÎÏÅĞÀÖÈÈ>
+	void addOperation(Node* operation) {
+		string name = operation->getName();
+
+		if (operation->getName() == "<ÎÏÅĞÀÖÈÈ>" || operation->getName() == "<ÎÏÅĞÀÖÈß>") {
+			for (auto el : operation->getNext()) addOperation(el);
+		}
+
+		else if (operation->getName() == "<ËÎÃÈ×ÅÑÊÀß ÎÏÅĞÀÖÈß>") {
+			operations.push_back(new LogicExpression(nullptr, operation));
+		} 
+
+		else if (operation->getName() == "<ÖÈÊË>") {
+			operations.push_back(new While(nullptr, operation));
+		}
+
+		else {
+			//throw InterpritationError("Íå óäàëîñü ïğîâåñòè èíòğåïğåòàöèş");
+		}
 	}
 };
