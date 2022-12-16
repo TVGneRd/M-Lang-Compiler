@@ -31,5 +31,8 @@
 *.out
 *.app
 /.vs/компиляторы
+
 /Debug
 /x64/Debug
+компиляторы.vcxproj
+компиляторы.vcxproj.filters
