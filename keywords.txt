@@ -1,2 +1,2 @@
-include main int double float long short bool char unsigned do while for if else lenght
-proc struct break switch case auto enum register typedef extern const union  return 
+include main int double float long short bool char unsigned do while for if else string
+proc struct break switch case auto enum register typedef extern const union return 
