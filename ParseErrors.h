@@ -37,3 +37,18 @@ public:
         return format("Семантическая ошибка: {}\nСтрока: \033[30;36m{}\033[30;0m", message, line);
     }
 };
+
+class InterpritationError : public std::exception {
+private:
+    string message;
+    int line;
+
+public:
+    InterpritationError(string msg) {
+        message = msg;
+    }
+
+    string what() {
+        return format("Интерпретационная ошибка: {}\n", message);
+    }
+};

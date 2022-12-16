@@ -119,8 +119,6 @@ void applyCommand(int command) {
 	}
 	
 	case 5: {
-		Scanner scanner;
-
 		scanner.to_scan();
 
 		if (checkScanner()) {
@@ -166,8 +164,6 @@ void applyCommand(int command) {
 	}
 
 	case 6: {
-		Scanner scanner;
-
 		scanner.to_scan();
 
 		if (checkScanner()) {
@@ -203,8 +199,18 @@ void applyCommand(int command) {
 
 			Generator generator(parser.getTree());
 
-			generator.genarate();
+			try
+			{
+				generator.generate();
+			}
+			catch (InterpritationError err)
+			{
+				cout << "\033[30;41mОшибка интепретации!\033[0m" << endl;
+
+				cout << err.what() << endl;
+			}
 		}
+
 		backLoop();
 		break;
 	}
