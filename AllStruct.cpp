@@ -55,7 +55,7 @@ bool All_Dividers::operator==(string& obg) {
 	}
 	return false;
 }
-Token::Token(string& NAME, int TYPE, int line) {
+Token::Token(string NAME, int TYPE, int line) {
 	name = NAME;
 	type = TYPE;
 	lineNumber = line;

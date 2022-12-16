@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Node.h"
+#include "AllStruct.h"
 
 using namespace std;
 
@@ -12,7 +13,7 @@ class Tree
 {
 public:
 	Tree(Node* rootPtr = nullptr) {
-		root = rootPtr ? rootPtr : new Node(counter++, "root", 0, rootPtr);
+		root = rootPtr ? rootPtr : new Node(counter++, "root", new Token(string("root"), BEGIN_STATE, 0), rootPtr);
 		ptr = root;
 	}
 
@@ -37,8 +38,8 @@ public:
 		return nullptr;
 	}
 
-	void down(string name, int line) {
-		Node* node = new Node(counter++, name, line, ptr);
+	void down(string name, Token *token) {
+		Node* node = new Node(counter++, name, token, ptr);
 		ptr->addNext(node);
 		ptr = node;
 	}

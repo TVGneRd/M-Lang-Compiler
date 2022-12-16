@@ -137,7 +137,7 @@ class Parser
 	// <S> = “main” ”(” “)” “;” “{”<ÎÏÅÐÀÖÈÈ>”}”
 	void S()
 	{
-		tree.down("<S>", stream.getCurrentLine());
+		tree.down("<S>", stream.getCurrentElement());
 
 		nextLexem("main");
 		nextLexem("(");
@@ -152,7 +152,7 @@ class Parser
 
 	// <ÎÏÅÐÀÖÈÈ> = <ÎÏÅÐÀÖÈß>”;”<ÎÏÅÐÀÖÈÈ>”;” | <ÎÏÅÐÀÖÈß>”;”
 	void Operations(){
-		tree.down("<ÎÏÅÐÀÖÈÈ>", stream.getCurrentLine());
+		tree.down("<ÎÏÅÐÀÖÈÈ>", stream.getCurrentElement());
 
 		store();
 
@@ -174,7 +174,7 @@ class Parser
 
 	// <ÎÏÅÐÀÖÈß> = <ÎÁÚßÂËÅÍÈÅ ÏÅÐÅÌÅÍÍÛÕ> | <ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ> | <ÏÐÈÑÂÎÅÍÈÅ> | <ÂÛÇÎÂ> | <ÖÈÊË>
 	void Operation() {
-		tree.down("<ÎÏÅÐÀÖÈß>", stream.getCurrentLine());
+		tree.down("<ÎÏÅÐÀÖÈß>", stream.getCurrentElement());
 		
 		store();
 
@@ -227,7 +227,7 @@ class Parser
 
 	// <ÖÈÊË> = “while””(”<ËÎÃÈ×ÅÑÊÀß ÎÏÅÐÀÖÈß>”)”<ÎÏÅÐAÖÈß>”;”
 	void While() {
-		tree.down("<ÖÈÊË>", stream.getCurrentLine());
+		tree.down("<ÖÈÊË>", stream.getCurrentElement());
 
 		nextLexem("while");
 		nextLexem("(");
@@ -240,7 +240,7 @@ class Parser
 
 	// <ËÎÃÈ×ÅÑÊÀß ÎÏÅÐÀÖÈß> = <ÎÏÅÐÀÍÄ><ËÎÃÈ×ÅÑÊÈÉ ÎÏÅÐÀÒÎÐ><ÎÏÅÐÀÍÄ>
 	void LogicExpression() {
-		tree.down("<ËÎÃÈ×ÅÑÊÀß ÎÏÅÐÀÖÈß>", stream.getCurrentLine());
+		tree.down("<ËÎÃÈ×ÅÑÊÀß ÎÏÅÐÀÖÈß>", stream.getCurrentElement());
 
 		Operand();
 		nextLogicOperator();
@@ -251,7 +251,7 @@ class Parser
 
 	// <ÎÁÚßÂËÅÍÈÅ ÏÅÐÅÌÅÍÍÛÕ> = <ÒÈÏ><ÈÄÅÍÒÈÔÈÊÀÒÎÐ>
 	void VariableDefine() {
-		tree.down("<ÎÁÚßÂËÅÍÈÅ ÏÅÐÅÌÅÍÍÎÉ>", stream.getCurrentLine());
+		tree.down("<ÎÁÚßÂËÅÍÈÅ ÏÅÐÅÌÅÍÍÎÉ>", stream.getCurrentElement());
 
 		Token type = stream.get();
 		Token identifyer = stream.get();
@@ -267,7 +267,7 @@ class Parser
 
 	// <ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ> = “proc”<ÈÄÅÍÒÈÔÈÊÀÒÎÐ>”(”< ÏÎÑËÅÄ. ÏÐÈÍ. ÀÐÃÓÌÅÍÒÎÂ> ”)” ”{“ <ÎÏÅÐÀÖÈÈ><ÂÎÇÂÐÀÒ>”}” | “proc”<ÈÄÅÍÒÈÔÈÊÀÒÎÐ>”(”< ÏÎÑËÅÄ. ÏÐÈÍ. ÀÐÃÓÌÅÍÒÎÂ>”)””{“<ÂÎÇÂÐÀÒ>”}”
 	void FunctionDefine() {
-		tree.down("<ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ>", stream.getCurrentLine());
+		tree.down("<ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ>", stream.getCurrentElement());
 
 		nextLexem("proc");
 		nextIdentifier();
@@ -296,7 +296,7 @@ class Parser
 
 	// <ÏÎÑËÅÄ. ÏÐÈÍ. ÀÐÃÓÌÅÍÒÎÂ> = <ÏÐÈÍ. ÀÐÃÓÌÅÍÒ>|< ÏÐÈÍ. ÀÐÃÓÌÅÍÒ>”,”<ÏÎÑËÅÄ. ÏÐÈÍ. ÀÐÃÓÌÅÍÒÎÂ>
 	void AcceptedArguments() {
-		tree.down("<ÏÎÑËÅÄ. ÏÐÈÍ. ÀÐÃÓÌÅÍÒÎÂ>", stream.getCurrentLine());
+		tree.down("<ÏÎÑËÅÄ. ÏÐÈÍ. ÀÐÃÓÌÅÍÒÎÂ>", stream.getCurrentElement());
 
 		store();
 
@@ -321,7 +321,7 @@ class Parser
 
 	// <ÂÎÇÂÐÀÒ> = “return” ” “ <ÎÏÅÐÀÍÄ>
 	void Return() {
-		tree.down("<ÂÎÇÂÐÀÒ>", stream.getCurrentLine());
+		tree.down("<ÂÎÇÂÐÀÒ>", stream.getCurrentElement());
 		
 		nextLexem("return");
 		Operand();
@@ -331,7 +331,7 @@ class Parser
 
 	// <ÏÐÈÑÂÎÅÍÈÅ> = <ÈÄÅÍÒÈÔÈÊÀÒÎÐ>”=”<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>
 	void Assignment() {
-		tree.down("<ÏÐÈÑÂÎÅÍÈÅ>", stream.getCurrentLine());
+		tree.down("<ÏÐÈÑÂÎÅÍÈÅ>", stream.getCurrentElement());
 
 		nextIdentifier();
 		nextLexem("=");
@@ -342,7 +342,7 @@ class Parser
 
 	// <ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ> = <ÂÛÇÎÂ> | <ÎÏÅÐÀÍÄ><ÌÀÒ. ÎÏÅÐÀÒÎÐ><ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>|<ÎÏÅÐÀÍÄ>
 	void Expression() {
-		tree.down("<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>", stream.getCurrentLine());
+		tree.down("<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>", stream.getCurrentElement());
 
 		store();
 
@@ -375,7 +375,7 @@ class Parser
 
 	// <ÎÏÅÐÀÍÄ> = <ÏÎÑËÅÄ. ÖÈÔÐ> | <ÈÄÅÍÒÈÔÈÊÀÒÎÐ> | <ÂÛÇÎÂ>
 	void Operand() {
-		tree.down("<ÎÏÅÐÀÍÄ>", stream.getCurrentLine());
+		tree.down("<ÎÏÅÐÀÍÄ>", stream.getCurrentElement());
 
 		Token token = stream.get();
 
@@ -405,7 +405,7 @@ class Parser
 
 	// <ÂÛÇÎÂ> = <ÈÄÅÍÒÈÔÈÊÀÒÎÐ>”(”<ÏÎÑËÅÄ. ÏÅÐÅÄ. ÀÐÃÓÌÅÍÒÎÂ>”)”
 	void Call() {
-		tree.down("<ÂÛÇÎÂ>", stream.getCurrentLine());
+		tree.down("<ÂÛÇÎÂ>", stream.getCurrentElement());
 		nextIdentifier();
 		nextLexem("(");
 		PassedArguments();
@@ -415,7 +415,7 @@ class Parser
 
 	// <ÏÎÑËÅÄ. ÏÅÐÅÄ. ÀÐÃÓÌÅÍÒÎÂ> = <ÈÄÅÍÒÈÔÈÊÀÒÎÐ> | <ÈÄÅÍÒÈÔÈÊÀÒÎÐ>”,”<ÏÎÑËÅÄ. ÏÅÐÅÄ. ÀÐÃÓÌÅÍÒÎÂ>
 	void PassedArguments() {
-		tree.down("<ÏÎÑËÅÄ. ÏÅÐÅÄ. ÀÐÃÓÌÅÍÒÎÂ>", stream.getCurrentLine());
+		tree.down("<ÏÎÑËÅÄ. ÏÅÐÅÄ. ÀÐÃÓÌÅÍÒÎÂ>", stream.getCurrentElement());
 
 		store();
 
@@ -439,6 +439,10 @@ class Parser
 public:
 	Parser(Table<Token>* stream_of_token) {
 		stream = *stream_of_token;
+	}
+
+	Tree* getTree() {
+		return &this->tree;
 	}
 
 	void printTree() {

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "AllStruct.h"
+
 using namespace std;
 
 enum { COMPLETED, LEFT_UNCOMPLETED, RIGHT_UNCOMPLETED, UNCOMPLETED};
@@ -11,10 +13,10 @@ class Node
 {
 public:
 
-	Node(int id, string name, int line, Node* prev) {
+	Node(int id, string name, Token* token, Node* prev) {
 		this->id = id;
-		this->line = line;
 		this->name = name;
+		this->token = token;
 		this->prev = prev;
 	}
 
@@ -26,6 +28,10 @@ public:
 
 	string getName() {
 		return name;
+	}
+
+	Token getToken() {
+		return *token;
 	}
 
 	void addNext(Node* node) {
@@ -49,12 +55,12 @@ public:
 	}
 
 	int getLine() {
-		return line;
+		return token->get_line_number();
 	}
 
 	Node* clone(Node* newPrev = nullptr) {
 
-		Node* node = new Node(id, name, line, newPrev);
+		Node* node = new Node(id, name, token, newPrev);
 
 		for (auto el : next) {
 			node->addNext(el->clone(node));
@@ -67,8 +73,8 @@ public:
 
 private:
 	int id;
-	int line;
 
+	Token* token;
 	string name;
 
 	Node* prev = nullptr;

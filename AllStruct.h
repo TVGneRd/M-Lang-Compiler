@@ -13,7 +13,7 @@ class Token {
 	int type; // 1 - ID; 2 - KEYWORD; 3 - DIVIDER; 4 - CONSTANT; 
 	int lineNumber;
 public:
-	Token(string& NAME, int TYPE, int line);
+	Token(string NAME, int TYPE, int line);
 	Token(const Token& obg);
 	void set_name(string& N) { name = N; };
 	string get_name() { return name; };
@@ -43,7 +43,7 @@ inline bool Token::operator==(string& obg) {
 class Identifier {
 	string name;
 public:
-	Identifier(string& NAME) { name = NAME; };
+	Identifier(string NAME) { name = NAME; };
 	Identifier(const Identifier& obg) { name = obg.name; };
 	void set_name(string& N) { name = N; };
 	string& get_name() { return name; };
@@ -130,6 +130,8 @@ public:
 	int get_count() { return count; };
 	int getIterrator() { return iterrator; };
 	int getCurrentLine() { return table[iterrator].get_line_number(); };
+	Token* getCurrentElement() { return &table[iterrator]; };
+
 	void seek(int pos);
 	void back(int to = 1) { iterrator = max(0, iterrator - to); };
 
