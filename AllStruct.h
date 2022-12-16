@@ -4,7 +4,9 @@
 #include <fstream>
 #include <iostream>
 using namespace std;
+
 enum { KEYWORD, DIVIDER, IDENTIFIER, CONSTANT, END_OF_PROGRAMM, ERROR, BEGIN_STATE };
+
 class Token {
 	//1 Лексема
 	string name;

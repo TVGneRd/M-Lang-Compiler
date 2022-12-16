@@ -5,6 +5,8 @@
 
 using namespace std;
 
+enum { COMPLETED, LEFT_UNCOMPLETED, RIGHT_UNCOMPLETED, UNCOMPLETED};
+
 class Node
 {
 public:
