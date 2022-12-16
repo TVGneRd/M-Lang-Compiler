@@ -30,7 +30,10 @@ private:
 
 class Assigment: public Operation {
 public:
-	string assembly() {
+
+	string assembly() { // Присвоение (левому операнду)
+		string result = "";
+		result += "mov ecx, " + RightOperand(node->getFirst()).assembly() + "\n" + "mov " + LeftOperand(node->getFirst()).assembly() + ", ecx" + "\n";
 		return "mov";
 	}
 };
@@ -58,9 +61,19 @@ public:
 
 		return result;
 	}
-
+	
 };
 
+//class Define : public Operation {
+//public:
+//	Define(Node* node) : Operation(node) {};
+//	string result = "";
+//	string assembly() {
+//		if ()
+//		return "mov";
+//	}
+//
+//};
 class LeftOperand : public Operation {
 public:
 
@@ -98,6 +111,7 @@ public:
 class RightOperand : public Operation {
 public:
 
+	LogicExpression(Node* node) : Operation(node) {};
 	RightOperand(Node* node) : Operation(node) {};
 
 	string assembly() {
