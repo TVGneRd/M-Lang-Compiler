@@ -188,11 +188,21 @@ bool Scanner::delete_coment(char c1, char c2) {
 }
 
 void Scanner::to_scan() {
+	stream_of_token = Table<Token>();
+	table_of_identifier = Table<Identifier>();
+	table_of_constant = Table<Constant>();
+	keyWords = Table<KeyWord>();
+	dividers = Table<Divider>();
+
+	in_main.clear();
+	in_main.seekg(0);
+
 	lineCounter = 1;
+	keeper_last_char = '\0';
 
 	while (get_lex() != "") {}
-
 }
+
 void Scanner::print_stream_of_lex() {
 	string type;
 	cout << setw(10) << "№" << setw(10) << "Строка" << setw(20) << "Лексема" << setw(20) << " Тип лексемы" << endl;

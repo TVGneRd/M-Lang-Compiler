@@ -118,6 +118,8 @@ void applyCommand(int command) {
 	}
 	
 	case 5: {
+		Scanner scanner;
+
 		scanner.to_scan();
 
 		if (checkScanner()) {

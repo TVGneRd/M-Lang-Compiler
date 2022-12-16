@@ -135,7 +135,7 @@ class Parser
 	//
 
 	// <S> = “main” ”(” “)” “;” “{”<ÎÏÅĞÀÖÈÈ>”}”
-	void S(void)
+	void S()
 	{
 		tree.down("<S>", stream.getCurrentLine());
 
@@ -378,7 +378,8 @@ class Parser
 		tree.down("<ÎÏÅĞÀÍÄ>", stream.getCurrentLine());
 
 		Token token = stream.get();
-		
+
+		// ×èñëîâàÿ êîíñòàíòà 123123
 		if (token.get_type() == CONSTANT) {
 			tree.up();
 			return;
@@ -387,7 +388,7 @@ class Parser
 		stream.back();
 
 		store();
-
+		// Âûçîâ ôóíêöèè
 		try {
 			Call();
 
@@ -412,7 +413,7 @@ class Parser
 		tree.up();
 	}
 
-	// <ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ> = <ÈÄÅÍÒÈÔÈÊÀÒÎĞ>|<ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”,”<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>
+	// <ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ> = <ÈÄÅÍÒÈÔÈÊÀÒÎĞ> | <ÈÄÅÍÒÈÔÈÊÀÒÎĞ>”,”<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>
 	void PassedArguments() {
 		tree.down("<ÏÎÑËÅÄ. ÏÅĞÅÄ. ÀĞÃÓÌÅÍÒÎÂ>", stream.getCurrentLine());
 

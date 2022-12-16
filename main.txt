@@ -2,7 +2,7 @@ main(); {
 char a; //random comment
 int i;
 char b;
-string c
+string c;
 while (length(c) < 7) c = c+a+b;
 i = length(c);
 print(i); /*another random comment*/
