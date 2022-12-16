@@ -22,7 +22,6 @@ public:
 		this->node = node;
 	}
 
-	virtual void convolution() = 0;
 	virtual string assembly() = 0;
 
 private:
@@ -31,13 +30,14 @@ private:
 
 class Assigment: public Operation {
 public:
-	void convolution() {
 
-	}
-
-	string assembly() {
+	string assembly() { // Присвоение (левому операнду)
+		string result = "";
+		result += "mov ecx, " + RightOperand(node->getFirst()).assembly() + "\n" + "mov " + LeftOperand(node->getFirst()).assembly() + ", ecx" + "\n";
 		return "mov";
 	}
+	/*mov ecx, a
+	mov b, ecx*/
 };
 
 
@@ -45,27 +45,28 @@ class Expression : public Operation {
 public:
 	string name;
 
-	void convolution() {
-		//node->getName()
-	}
-
 	string assembly() {
+
 		return "mov";
 	}
-
+	
 };
 
+//class Define : public Operation {
+//public:
+//	Define(Node* node) : Operation(node) {};
+//	string result = "";
+//	string assembly() {
+//		if ()
+//		return "mov";
+//	}
+//
+//};
 
 class LogicExpression : public Operation {
 public:
 
-	LogicExpression(Node* node) : Operation(node) {
-		convolution();
-	};
-
-	void convolution() {
-		//node->getName()
-	}
+	LogicExpression(Node* node) : Operation(node) {};
 
 	string assembly() {
 		return "";
@@ -76,13 +77,7 @@ public:
 class While : public Operation {
 public:
 
-	While(Node* node) : Operation(node) {
-		convolution();
-	};
-
-	void convolution() {
-		
-	}
+	While(Node* node) : Operation(node) {};
 
 	string assembly() {
 		string id1 = "while_begin_" + node->getId();

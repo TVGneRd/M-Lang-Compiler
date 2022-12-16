@@ -48,6 +48,9 @@ public:
 		else if (operation->getName() == "<ЦИКЛ>") {
 			operations.push_back(new While(nullptr, operation));
 		}
+		else if (operation->getName() == "<ОБЪЯВЛЕНИЕ ПЕРЕМЕННОЙ>") {
+			operations.push_back(new Define(nullptr, operation));
+		}
 
 		else {
 			//throw InterpritationError("Не удалось провести интрепретацию");
