@@ -58,7 +58,7 @@ public:
 	void printNode(Node* node, int deep) {
 		for (int i = 0; i < deep; i++) cout << "-";
 
-		cout << "> " << node->getName() << " [" << node->getLine() << "]" << endl;
+		cout << "> " << node->getName() << " [" << node->getLine() << "]" << " (" << node->getNext().size() << ")" << endl;
 
 		for (auto nextEl : node->getNext()) {
 			printNode(nextEl, deep + 1);

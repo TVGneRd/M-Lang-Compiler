@@ -148,6 +148,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllStruct.h" />
+    <ClInclude Include="Generator.h" />
+    <ClInclude Include="GeneratorStructs.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="scanner.h" />
