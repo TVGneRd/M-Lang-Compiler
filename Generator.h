@@ -18,9 +18,9 @@ class Generator
 
 public:
 	Tree tree;
-	vector <Operation*> operations;
-	vector <Operation*> defines;
-	vector <Operation*> procDefines;
+	vector <OperationBase*> operations;
+	vector <OperationBase*> defines;
+	vector <OperationBase*> procDefines;
 
 	Generator(Tree *tree) {
 		this->tree = *tree;

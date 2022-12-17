@@ -205,7 +205,7 @@ void applyCommand(int command) {
 			}
 			catch (InterpritationError err)
 			{
-				cout << "\033[30;41mОшибка интепретации!\033[0m" << endl;
+				cout << "\033[30;41mОшибка интерпретации!\033[0m" << endl;
 
 				cout << err.what() << endl;
 			}

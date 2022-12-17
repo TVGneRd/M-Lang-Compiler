@@ -12,13 +12,13 @@
 
 enum {MARK, BOOL, OPERATIONS, CONST, ID_VALUE, ID_REFENCE};
 
-class Operation {
+class OperationBase {
 public:
-	Operation* next;
+	OperationBase* next;
 
 	Node* node;
 
-	Operation(Node* node) {
+	OperationBase(Node* node) {
 		this->node = node;
 	}
 
@@ -28,10 +28,10 @@ private:
 
 };
 
-class PassedArguments : public Operation {
+class PassedArguments : public OperationBase {
 public:
 
-	PassedArguments(Node* node) : Operation(node) {};
+	PassedArguments(Node* node) : OperationBase(node) {};
 
 	string assembly() {
 		string result = "push eax\n";
@@ -43,9 +43,11 @@ public:
 
 };
 
-class Expression : public Operation {
+
+
+class Expression : public OperationBase {
 public:
-	Expression(Node* node) : Operation(node) {};
+	Expression(Node* node) : OperationBase(node) {};
 
 	string assembly() {
 		string result;
@@ -90,9 +92,9 @@ public:
 };
 
 
-class Define : public Operation {
+class Define : public OperationBase {
 public:
-	Define(Node* node) : Operation(node) {};
+	Define(Node* node) : OperationBase(node) {};
 	string assembly() {
 		/*Node* next = node->getFirst();*/
 		string result = "";
@@ -106,10 +108,10 @@ public:
 };
 
 
-class LeftOperand : public Operation {
+class LeftOperand : public OperationBase {
 public:
 
-	LeftOperand(Node* node) : Operation(node) {};
+	LeftOperand(Node* node) : OperationBase(node) {};
 
 	string assembly() {
 		Node *next = node->getFirst();
@@ -120,7 +122,7 @@ public:
 			Node* idToken = next->getFirst();
 
 			result += PassedArguments(next->getNext()[1]).assembly() + "\n";
-			result += "call " + idToken->getToken().get_name();
+			result += format("call {}\n", idToken->getToken().get_name()); 
 
 			return result;
 		}
@@ -140,10 +142,11 @@ public:
 
 };
 
-class RightOperand : public Operation {
+
+class RightOperand : public OperationBase {
 public:
 
-	RightOperand(Node* node) : Operation(node) {};
+	RightOperand(Node* node) : OperationBase(node) {};
 
 	string assembly() {
 		Node* next = node->getFirst();
@@ -155,8 +158,8 @@ public:
 			Node* idToken = next->getFirst();
 
 			result += "push eax\n";
-			result += PassedArguments(node->getNext()[1]).assembly() + "\n";
-			result += "call " + idToken->getFirst()->getToken().get_name() + "\n";
+			result += PassedArguments(node->getNext()[1]).assembly() + string("\n");
+			result += format("call {}\n", idToken->getFirst()->getToken().get_name());
 			result += "mov ebx, eax\n";
 			result += "pop eax";
 
@@ -178,9 +181,9 @@ public:
 
 };
 
-class FunctionDefine : public Operation {
+class FunctionDefine : public OperationBase {
 public:
-	FunctionDefine(Node* node) : Operation(node) {};
+	FunctionDefine(Node* node) : OperationBase(node) {};
 	string assembly() {
 		Node* idToken = node->getFirst();
 
@@ -196,9 +199,9 @@ public:
 
 };
 
-class Assigment : public Operation {
+class Assigment : public OperationBase {
 public:
-	Assigment(Node* node) : Operation(node) {};
+	Assigment(Node* node) : OperationBase(node) {};
 
 	string assembly() { // Ïðèñâîåíèå (ëåâîìó îïåðàíäó)
 		string result;
@@ -212,10 +215,10 @@ public:
 };
 
 
-class LogicExpression : public Operation {
+class LogicExpression : public OperationBase {
 public:
 
-	LogicExpression(Node* node) : Operation(node) {};
+	LogicExpression(Node* node) : OperationBase(node) {};
 
 	string assembly() {
 		string result = LeftOperand(node->getFirst()).assembly();
@@ -224,17 +227,45 @@ public:
 	}
 };
 
-class While : public Operation {
+class Operation : public OperationBase {
 public:
-
-	While(Node* node) : Operation(node) {};
+	Operation(Node* node) : OperationBase(node) {};
 
 	string assembly() {
-		string id1 = "while_begin_" + node->getId();
-		string id2 = "while_end_" + node->getId();
+		string name = node->getName();
+
+		if (name == "<ÎÏÅÐÀÖÈÈ>" || name == "<ÎÏÅÐÀÖÈß>") {
+			string result = "";
+			for (auto el : node->getNext()) result += Operation(el).assembly();
+			return result;
+		}
+
+		else if (name == "<ÏÐÈÑÂÎÅÍÈÅ>") {
+			return Assigment(node).assembly();
+		}
+
+		else {
+			throw InterpritationError("Íå óäàëîñü ïðîâåñòè èíòðåïðåòàöèþ");
+		}
+	};
+
+private:
+
+};
+
+class While : public OperationBase {
+public:
+
+	While(Node* node) : OperationBase(node) {};
+
+	string assembly() {
+		string id1 = "while_begin_" + to_string(node->getId());
+		string id2 = "while_end_" + to_string(node->getId());
 
 		string result = id1 + ":\n";
-		result += LogicExpression(node->getFirst()).assembly() + " " + id2;
+		result += LogicExpression(node->getFirst()).assembly() + " " + id2 + "\n";
+
+		result += Operation(node->getNext()[1]).assembly();
 		result += id2 + ":\n";
 
 		return result;
