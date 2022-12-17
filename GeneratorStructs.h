@@ -28,27 +28,6 @@ private:
 
 };
 
-
-class Expression : public Operation {
-public:
-	Expression(Node* node) : Operation(node) {};
-
-	string assembly() {
-		string result;
-		Node* next = node->getFirst();
-
-		if (next->getName() == "<ÂÛÇÎÂ>") {
-			Node* idToken = next->getFirst();
-
-			result += PassedArguments(next->getNext()[1]).assembly() + "\n";
-			result += "call " + idToken->getToken().get_name();
-
-			return result;
-		}
-	}
-
-};
-
 class PassedArguments : public Operation {
 public:
 
@@ -61,7 +40,27 @@ public:
 
 		return result;
 	}
-	
+
+};
+
+class Expression : public Operation {
+public:
+	Expression(Node* node) : Operation(node) {};
+
+	string assembly() {
+		string result;
+		Node* next = node->getFirst();
+
+		if (next->getName() == "<ÂÛÇÎÂ>") {
+			/*Node* idToken = next->getFirst();
+
+			result += PassedArguments(next->getNext()[1]).assembly() + "\n";
+			result += "call " + idToken->getToken().get_name();*/
+
+			return result;
+		}
+	}
+
 };
 
 
@@ -138,7 +137,7 @@ public:
 			return result;
 		}
 
-		if (next->getName() == "<ÏÎÑËÅÄ. ÖÈÔÐ>") {
+		if (next->getToken().get_type() == CONSTANT) {
 			result += "move ebx, " + node->getFirst()->getToken().get_name() + "\n";
 
 			return result;
@@ -159,10 +158,10 @@ public:
 	string assembly() {
 		Node* idToken = node->getFirst();
 
-		string result = idToken->getToken().get_name() + "length PROC\n";
+		string result = idToken->getToken().get_name() + " PROC\n";
 		result += RightOperand(node->getNext()[2]).assembly();
-		result += "mov eax, ebx";
-		result += "pop ebx";
+		result += "mov eax, ebx\n";
+		result += "pop ebx\n";
 		result += "RET\n";
 		result += idToken->getToken().get_name() + " PROC\n";
 
@@ -176,9 +175,9 @@ public:
 	Assigment(Node* node) : Operation(node) {};
 
 	string assembly() { // Ïðèñâîåíèå (ëåâîìó îïåðàíäó)
-		string result = "";
+		string result;
 		Node* id = node->getFirst();
-		result += Expression(node->getFirst()).assembly() + "\n";
+		result += Expression(node->getNext()[1]).assembly() + "\n";
 
 		return result;
 	}
