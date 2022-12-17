@@ -58,12 +58,15 @@ class Define : public Operation {
 public:
 	Define(Node* node) : Operation(node) {};
 	string assembly() {
+		/*Node* next = node->getFirst();*/
 		string result = "";
-
-		/*if ()*/
-		return "mov";
+		if (node->getNext()[0]->getToken().get_name() == "char"|| node->getNext()[0]->getToken().get_name() == "string"){
+			result += node->getNext()[1]->getToken().get_name() + " DB \n";
+		}
+		else 
+			result += node->getNext()[1]->getToken().get_name() + " DD \n"; 
+		return result;
 	}
-
 };
 
 class LeftOperand : public Operation {
