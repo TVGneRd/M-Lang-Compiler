@@ -54,24 +54,17 @@ public:
 		Node* next = node->getFirst();
 
 		if (next->getName() == "<ÂÛÇÎÂ>") {
-			/*Node* idToken = next->getFirst();
+			Node* idToken = next->getFirst();
 
 			result += PassedArguments(next->getNext()[1]).assembly() + "\n";
-			result += "call " + idToken->getToken().get_name();*/
+			result += "call " + idToken->getToken().get_name();
 
 			return result;
 		} 
-		else if (next->getName() == "<ÎÏÅÐÀÍÄ>") {
-			Node* idToken = next->getFirst();
-
-			result += idToken->getToken().get_name();
-
-			return result;
-		}
 		else if (next->getName() == "<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>") {
 			Node* idToken = next->getFirst();
 
-			if (next->getNext().size() == 1) {
+			if (node->getNext().size() == 1) {
 				result += idToken->getToken().get_name();
 			}
 			else {
@@ -88,6 +81,15 @@ public:
 				result += Expression(node->getNext()[1]).assembly();
 			}
 			return result;
+		}
+		else if (next->getName() == "<ÎÏÅÐÀÍÄ>") {
+			Node* idToken = next->getFirst();
+			result += idToken->getToken().get_name();
+
+			if (node->getNext().size() == 0) {
+				return result;
+			}
+			else result += Expression(node->getNext()[1]).assembly();
 		}
 	}
 };
