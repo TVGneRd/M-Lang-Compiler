@@ -32,15 +32,15 @@ public:
 		addOperation(mainOperaion);
 
 		for (auto op : defines) {
-			cout << op->assembly();
+			cout << op->assembly() << endl;
 		}
 
 		for (auto op : operations) {
-			cout << op->assembly();
+			cout << op->assembly() << endl;
 		}
 
 		for (auto op : procDefines) {
-			cout << op->assembly();
+			cout << op->assembly() << endl;
 		}
 	}
 
@@ -58,7 +58,11 @@ public:
 		else if (name == "<ÖÈÊË>") {
 			operations.push_back(new While(operation));
 		}
-		
+
+		else if (name == "<ÏÐÈÑÂÎÅÍÈÅ>") {
+			operations.push_back(new Assigment(operation));
+		}
+
 		else if (operation->getName() == "<ÎÁÚßÂËÅÍÈÅ ÏÅÐÅÌÅÍÍÎÉ>") {
 			defines.push_back(new Define(operation));
 		}

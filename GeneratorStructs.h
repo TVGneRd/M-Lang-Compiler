@@ -31,10 +31,20 @@ private:
 
 class Expression : public Operation {
 public:
-	string name;
+	Expression(Node* node) : Operation(node) {};
 
 	string assembly() {
-		return "mov";
+		string result;
+		Node* next = node->getFirst();
+
+		if (next->getName() == "<ВЫЗОВ>") {
+			Node* idToken = next->getFirst();
+
+			result += PassedArguments(next->getNext()[1]).assembly() + "\n";
+			result += "call " + idToken->getToken().get_name();
+
+			return result;
+		}
 	}
 
 };
@@ -61,31 +71,13 @@ public:
 	string assembly() {
 		/*Node* next = node->getFirst();*/
 		string result = "";
-		if (node->getNext()[0]->getToken().get_name() == "char"|| node->getNext()[0]->getToken().get_name() == "string"){
+		if (node->getNext()[0]->getToken().get_name() == "char" || node->getNext()[0]->getToken().get_name() == "string"){
 			result += node->getNext()[1]->getToken().get_name() + " DB \n";
 		}
 		else 
 			result += node->getNext()[1]->getToken().get_name() + " DD \n"; 
 		return result;
 	}
-};
-
-class FunctionDefine : public Operation {
-public:
-	FunctionDefine(Node* node) : Operation(node) {};
-	string assembly() {
-		Node* idToken = node->getFirst();
-
-		string result = idToken->getToken().get_name() + "length PROC\n";
-		result += RightOperand(node->getNext()[2]).assembly();
-		result += "mov eax, ebx";
-		result += "pop ebx";
-		result += "RET\n";
-		result += idToken->getToken().get_name() + " PROC\n";
-
-		return result;
-	}
-
 };
 
 
@@ -161,13 +153,34 @@ public:
 
 };
 
+class FunctionDefine : public Operation {
+public:
+	FunctionDefine(Node* node) : Operation(node) {};
+	string assembly() {
+		Node* idToken = node->getFirst();
+
+		string result = idToken->getToken().get_name() + "length PROC\n";
+		result += RightOperand(node->getNext()[2]).assembly();
+		result += "mov eax, ebx";
+		result += "pop ebx";
+		result += "RET\n";
+		result += idToken->getToken().get_name() + " PROC\n";
+
+		return result;
+	}
+
+};
+
 class Assigment : public Operation {
 public:
+	Assigment(Node* node) : Operation(node) {};
 
 	string assembly() { // Присвоение (левому операнду)
 		string result = "";
-		result += "mov ecx, " + RightOperand(node->getFirst()).assembly() + "\n" + "mov " + LeftOperand(node->getFirst()).assembly() + ", ecx" + "\n";
-		return "mov";
+		Node* id = node->getFirst();
+		result += Expression(node->getFirst()).assembly() + "\n";
+
+		return result;
 	}
 };
 
