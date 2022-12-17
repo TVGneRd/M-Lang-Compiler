@@ -28,6 +28,20 @@ private:
 
 };
 
+class PassedArguments : public Operation {
+public:
+
+	PassedArguments(Node* node) : Operation(node) {};
+
+	string assembly() {
+		string result = "push eax\n";
+		result += "mov eax, " + node->getFirst()->getToken().get_name() + "\n";
+		result += "push eax\n";
+
+		return result;
+	}
+
+};
 
 class Expression : public Operation {
 public:
@@ -44,24 +58,35 @@ public:
 			result += "call " + idToken->getToken().get_name();
 
 			return result;
+		} 
+		else if (next->getName() == "<ÎÏÅÐÀÍÄ>") {
+			Node* idToken = next->getFirst();
+
+			result += idToken->getToken().get_name();
+
+			return result;
+		}
+		else if (next->getName() == "<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>") {
+			Node* idToken = next->getFirst();
+
+			if (next->getNext().size() == 1) {
+				result += idToken->getToken().get_name();
+			}
+			else {
+				if (next->getNext()[1]->getToken().get_name() == "+") {
+					result += "add eax," + idToken->getToken().get_name() + "\n";
+				}
+				else if (next->getNext()[1]->getToken().get_name() == "-") {
+					result += "sub eax," + idToken->getToken().get_name() + "\n";
+				}
+				else if (next->getNext()[1]->getToken().get_name() == "*") {
+				result += "mov eax," + idToken->getToken().get_name() + "\n" + "mul eax";
+				}
+				result += Expression(node->getNext()[1]).assembly();
+			}
+			return result;
 		}
 	}
-
-};
-
-class PassedArguments : public Operation {
-public:
-
-	PassedArguments(Node* node) : Operation(node) {};
-
-	string assembly() {
-		string result = "push eax\n";
-		result += "mov eax, " + node->getFirst()->getToken().get_name() + "\n";
-		result += "push eax\n";
-
-		return result;
-	}
-	
 };
 
 
@@ -178,10 +203,12 @@ public:
 	string assembly() { // Ïðèñâîåíèå (ëåâîìó îïåðàíäó)
 		string result = "";
 		Node* id = node->getFirst();
-		result += Expression(node->getFirst()).assembly() + "\n";
-
+		result += "mov eax," + Expression(node->getNext()[1]).assembly() + "\n";
+		result +=  node->getFirst()->getToken().get_name() + ", eax\n";
 		return result;
 	}
+	//mov eax, result
+	//mov operand_left, eax
 };
 
 
@@ -195,7 +222,6 @@ public:
 
 		return result;
 	}
-
 };
 
 class While : public Operation {
