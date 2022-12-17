@@ -19,13 +19,11 @@ class Generator
 public:
 	Tree tree;
 	vector <Operation*> operations;
+	vector <Operation*> defines;
+	vector <Operation*> procDefines;
 
 	Generator(Tree *tree) {
 		this->tree = *tree;
-	}
-
-	void defineSubProcess() {
-
 	}
 
 	void generate() {
@@ -33,7 +31,15 @@ public:
 		
 		addOperation(mainOperaion);
 
+		for (auto op : defines) {
+			cout << op->assembly();
+		}
+
 		for (auto op : operations) {
+			cout << op->assembly();
+		}
+
+		for (auto op : procDefines) {
 			cout << op->assembly();
 		}
 	}
@@ -54,7 +60,11 @@ public:
 		}
 		
 		else if (operation->getName() == "<ÎÁÚßÂËÅÍÈÅ ÏÅÐÅÌÅÍÍÎÉ>") {
-			operations.push_back(new Define(operation));
+			defines.push_back(new Define(operation));
+		}
+
+		else if (operation->getName() == "<ÎÁÚßÂËÅÍÈÅ ÔÓÍÊÖÈÈ>") {
+			procDefines.push_back(new FunctionDefine(operation));
 		}
 
 		else {

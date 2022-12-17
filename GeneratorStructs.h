@@ -54,6 +54,7 @@ public:
 	
 };
 
+
 class Define : public Operation {
 public:
 	Define(Node* node) : Operation(node) {};
@@ -65,6 +66,25 @@ public:
 	}
 
 };
+
+class FunctionDefine : public Operation {
+public:
+	FunctionDefine(Node* node) : Operation(node) {};
+	string assembly() {
+		Node* idToken = node->getFirst();
+
+		string result = idToken->getToken().get_name() + "length PROC\n";
+		result += RightOperand(node->getNext()[2]).assembly();
+		result += "mov eax, ebx";
+		result += "pop ebx";
+		result += "RET\n";
+		result += idToken->getToken().get_name() + " PROC\n";
+
+		return result;
+	}
+
+};
+
 
 class LeftOperand : public Operation {
 public:
