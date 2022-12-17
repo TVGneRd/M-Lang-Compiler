@@ -44,57 +44,6 @@ public:
 };
 
 
-
-class Expression : public OperationBase {
-public:
-	Expression(Node* node) : OperationBase(node) {};
-
-	string assembly() {
-		string result;
-		Node* next = node->getFirst();
-
-		if (next->getName() == "<ÂÛÇÎÂ>") {
-			Node* idToken = next->getFirst();
-
-			result += PassedArguments(next->getNext()[1]).assembly() + "\n";
-			result += "call " + idToken->getToken().get_name();
-
-			return result;
-		} 
-		else if (next->getName() == "<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>") {
-			Node* idToken = next->getFirst();
-
-			if (node->getNext().size() == 1) {
-				result += idToken->getToken().get_name();
-			}
-			else {
-				if (next->getNext()[1]->getToken().get_name() == "+") {
-					result += "add eax," + idToken->getToken().get_name() + "\n";
-				}
-				else if (next->getNext()[1]->getToken().get_name() == "-") {
-					result += "sub eax," + idToken->getToken().get_name() + "\n";
-				}
-				else if (next->getNext()[1]->getToken().get_name() == "*") {
-					result += "mov eax," + idToken->getToken().get_name() + "\n" + "mul eax";
-				}
-				
-				result += Expression(node->getNext()[1]).assembly();
-			}
-			return result;
-		}
-		else if (next->getName() == "<ÎÏÅĞÀÍÄ>") {
-			Node* idToken = next->getFirst();
-			result += idToken->getToken().get_name();
-
-			if (node->getNext().size() == 0) {
-				return result;
-			}
-			else result += Expression(node->getNext()[1]).assembly();
-		}
-	}
-};
-
-
 class Define : public OperationBase {
 public:
 	Define(Node* node) : OperationBase(node) {};
@@ -120,7 +69,7 @@ public:
 		string result;
 
 		if (node->getToken().get_type() == CONSTANT) {
-			result += "move ebx, " + node->getToken().get_name() + "\n";
+			result += "mov ebx, " + node->getToken().get_name() + "\n";
 
 			return result;
 		}
@@ -136,14 +85,9 @@ public:
 			return result;
 		}
 
-		if (next->getName() == "<ÏÎÑËÅÄ. ÖÈÔĞ>") {
-			result += "move eax, " + node->getFirst()->getToken().get_name() + "\n";
 
-			return result;
-		}
-
-		if (next->getName() == "<ÈÄÅÍÒÈÔÈÊÀÒÎĞ>") {
-			result += "move eax, " + node->getFirst()->getToken().get_name() + "\n";
+		if (next->getToken().get_type() == IDENTIFIER) {
+			result += "mov eax, " + node->getFirst()->getToken().get_name() + "\n";
 
 			return result;
 		}
@@ -161,7 +105,7 @@ public:
 		string result;
 
 		if (node->getToken().get_type() == CONSTANT) {
-			result += "move ebx, " + node->getToken().get_name() + "\n";
+			result += "mov ebx, " + node->getToken().get_name() + "\n";
 
 			return result;
 		}
@@ -176,18 +120,51 @@ public:
 			result += PassedArguments(node->getNext()[1]).assembly() + string("\n");
 			result += format("call {}\n", idToken->getFirst()->getToken().get_name());
 			result += "mov ebx, eax\n";
-			result += "pop eax";
+			result += "pop eax\n";
 
 			return result;
 		}
 
-		if (next->getName() == "<ÈÄÅÍÒÈÔÈÊÀÒÎĞ>") {
-			result += "move ebx, " + node->getFirst()->getToken().get_name() + "\n";
+		if (next->getToken().get_type() == IDENTIFIER) {
+			result += "mov ebx, " + node->getFirst()->getToken().get_name() + "\n";
 
 			return result;
 		}
 	}
 
+};
+
+class Expression : public OperationBase {
+public:
+	Expression(Node* node) : OperationBase(node) {};
+
+	string assembly() {
+		Node* first = node->getFirst();
+
+		string result = LeftOperand(first).assembly();
+
+		if (node->getNext().size() == 1) {
+			return result;
+		}
+
+		if (node->getNext()[2]->getName() == "<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>") {
+			result += Expression(node->getNext()[2]).assembly();
+		}
+		else if (node->getNext()[2]->getToken().get_type() == IDENTIFIER) {
+			result += "mov ebx, " + node->getFirst()->getToken().get_name() + "\n";
+		}
+
+		string operand = node->getNext()[1]->getToken().get_name();
+
+		if (operand == "+") {
+			result += "add eax, ebx\n";
+		}
+		else if (operand == "-") {
+			result += "sub eax, ebx\n";
+		}
+
+		return result;
+	}
 };
 
 class FunctionDefine : public OperationBase {
@@ -215,8 +192,8 @@ public:
 	string assembly() { // Ïğèñâîåíèå (ëåâîìó îïåğàíäó)
 		string result;
 		Node* id = node->getFirst();
-		result += "mov eax," + Expression(node->getNext()[1]).assembly() + "\n";
-		result +=  node->getFirst()->getToken().get_name() + ", eax\n";
+		result +=  Expression(node->getNext()[1]).assembly() + "\n";
+		result +=  node->getFirst()->getToken().get_name() + ", eax\n"; // Ğàçîáğàòüñÿ!!!
 		return result;
 	}
 	//mov eax, result
