@@ -148,7 +148,11 @@ public:
 		}
 
 		if (node->getNext()[2]->getName() == "<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>") {
+			result += "push eax\n";
 			result += Expression(node->getNext()[2]).assembly();
+			result += "mov ebx, eax\n";
+			result += "pop eax\n";
+
 		}
 		else if (node->getNext()[2]->getToken().get_type() == IDENTIFIER) {
 			result += "mov ebx, " + node->getFirst()->getToken().get_name() + "\n";
@@ -185,6 +189,23 @@ public:
 
 };
 
+class Call : public OperationBase {
+public:
+	Call(Node* node) : OperationBase(node) {};
+
+	string assembly() { // Ïðèñâîåíèå (ëåâîìó îïåðàíäó)
+		string result;
+		Node* id = node->getFirst();
+
+		result += PassedArguments(node->getNext()[1]).assembly() + "\n";
+		result += format("call {}\n", id->getToken().get_name());
+
+		return result;
+	}
+	//mov eax, result
+	//mov operand_left, eax
+};
+
 class Assigment : public OperationBase {
 public:
 	Assigment(Node* node) : OperationBase(node) {};
@@ -193,7 +214,7 @@ public:
 		string result;
 		Node* id = node->getFirst();
 		result +=  Expression(node->getNext()[1]).assembly() + "\n";
-		result +=  node->getFirst()->getToken().get_name() + ", eax\n"; // Ðàçîáðàòüñÿ!!!
+		result +=  "mov " + node->getFirst()->getToken().get_name() + ", eax\n";
 		return result;
 	}
 	//mov eax, result
@@ -212,7 +233,7 @@ public:
 
 		string sign = node->getNext()[1]->getToken().get_name();
 		
-		result = "cmp eax, ebx\n";
+		result += "cmp eax, ebx\n";
 
 		if (sign == "<") {
 			result += "jl ";

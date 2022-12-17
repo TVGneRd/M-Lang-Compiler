@@ -343,20 +343,9 @@ class Parser
 		tree.up();
 	}
 
-	// <ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ> = <ÂÛÇÎÂ> | <ÎÏÅÐÀÍÄ><ÌÀÒ. ÎÏÅÐÀÒÎÐ><ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>|<ÎÏÅÐÀÍÄ>
+	// <ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ> = <ÎÏÅÐÀÍÄ><ÌÀÒ. ÎÏÅÐÀÒÎÐ><ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>|<ÎÏÅÐÀÍÄ>
 	void Expression() {
 		tree.down("<ÂÛ×ÈÑËßÅÌÎÅ ÇÍÀ×ÅÍÈÅ>", stream.getCurrentElement());
-
-		store();
-
-		// <ÂÛÇÎÂ>
-		try {
-			Call();
-
-			tree.up();
-			return dropStore();
-		}
-		catch (SyntaxError err) { restore(); };
 
 		store();
 
