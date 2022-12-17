@@ -29,9 +29,13 @@ public:
 	}
 
 	void generate() {
-		Node* mainOperaion = tree.getRoot()->getFirst()->getFirst()->getFirst(); // ROOT -> <S> -> <ÎÏÅÐÀÖÈÈ>
+		Node* mainOperaion = tree.getRoot()->getFirst()->getFirst(); // ROOT -> <S> -> <ÎÏÅÐÀÖÈÈ>
 		
 		addOperation(mainOperaion);
+
+		for (auto op : operations) {
+			cout << op->assembly();
+		}
 	}
 
 	void addOperation(Node* operation) {
@@ -48,8 +52,9 @@ public:
 		else if (name == "<ÖÈÊË>") {
 			operations.push_back(new While(operation));
 		}
+		
 		else if (operation->getName() == "<ÎÁÚßÂËÅÍÈÅ ÏÅÐÅÌÅÍÍÎÉ>") {
-			operations.push_back(new Define(nullptr, operation));
+			operations.push_back(new Define(operation));
 		}
 
 		else {

@@ -98,6 +98,8 @@ class Parser
 	// —ледующий тип
 	void nextType()
 	{
+		tree.down("TYPE: " + stream.getCurrentElement()->get_name(), stream.getCurrentElement()); tree.up();
+
 		Token token = stream.get();
 
 		if (!contains(TYPES, token.get_name())) ErrorOnToken(token, "ќжидалс€ тип");

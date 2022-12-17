@@ -28,16 +28,6 @@ private:
 
 };
 
-class Assigment: public Operation {
-public:
-
-	string assembly() { // Присвоение (левому операнду)
-		string result = "";
-		result += "mov ecx, " + RightOperand(node->getFirst()).assembly() + "\n" + "mov " + LeftOperand(node->getFirst()).assembly() + ", ecx" + "\n";
-		return "mov";
-	}
-};
-
 
 class Expression : public Operation {
 public:
@@ -64,16 +54,18 @@ public:
 	
 };
 
-//class Define : public Operation {
-//public:
-//	Define(Node* node) : Operation(node) {};
-//	string result = "";
-//	string assembly() {
-//		if ()
-//		return "mov";
-//	}
-//
-//};
+class Define : public Operation {
+public:
+	Define(Node* node) : Operation(node) {};
+	string assembly() {
+		string result = "";
+
+		/*if ()*/
+		return "mov";
+	}
+
+};
+
 class LeftOperand : public Operation {
 public:
 
@@ -82,13 +74,13 @@ public:
 	string assembly() {
 		Node *next = node->getFirst();
 
-		string result = "push eax\n";
+		string result ;
 
 		if (next->getName() == "<ВЫЗОВ>") {
-			Node* idToken = node->getFirst();
+			Node* idToken = next->getFirst();
 
-			result += PassedArguments(node->getNext()[1]).assembly() + "\n";
-			result += "call " + idToken->getFirst()->getToken().get_name();
+			result += PassedArguments(next->getNext()[1]).assembly() + "\n";
+			result += "call " + idToken->getToken().get_name();
 
 			return result;
 		}
@@ -111,18 +103,16 @@ public:
 class RightOperand : public Operation {
 public:
 
-	LogicExpression(Node* node) : Operation(node) {};
 	RightOperand(Node* node) : Operation(node) {};
 
 	string assembly() {
 		Node* next = node->getFirst();
 
-		string result = "push ebx\n";
+		string result;
 
 		if (next->getName() == "<ВЫЗОВ>") {
 
-
-			Node* idToken = node->getFirst();
+			Node* idToken = next->getFirst();
 
 			result += "push eax\n";
 			result += PassedArguments(node->getNext()[1]).assembly() + "\n";
@@ -147,6 +137,17 @@ public:
 	}
 
 };
+
+class Assigment : public Operation {
+public:
+
+	string assembly() { // Присвоение (левому операнду)
+		string result = "";
+		result += "mov ecx, " + RightOperand(node->getFirst()).assembly() + "\n" + "mov " + LeftOperand(node->getFirst()).assembly() + ", ecx" + "\n";
+		return "mov";
+	}
+};
+
 
 class LogicExpression : public Operation {
 public:
