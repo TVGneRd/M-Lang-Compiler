@@ -82,8 +82,9 @@ public:
 					result += "sub eax," + idToken->getToken().get_name() + "\n";
 				}
 				else if (next->getNext()[1]->getToken().get_name() == "*") {
-				result += "mov eax," + idToken->getToken().get_name() + "\n" + "mul eax";
+					result += "mov eax," + idToken->getToken().get_name() + "\n" + "mul eax";
 				}
+				
 				result += Expression(node->getNext()[1]).assembly();
 			}
 			return result;
@@ -114,9 +115,15 @@ public:
 	LeftOperand(Node* node) : OperationBase(node) {};
 
 	string assembly() {
-		Node *next = node->getFirst();
+		string result;
 
-		string result ;
+		if (node->getToken().get_type() == CONSTANT) {
+			result += "move ebx, " + node->getToken().get_name() + "\n";
+
+			return result;
+		}
+
+		Node *next = node->getFirst();
 
 		if (next->getName() == "<ÂÛÇÎÂ>") {
 			Node* idToken = next->getFirst();
@@ -149,9 +156,15 @@ public:
 	RightOperand(Node* node) : OperationBase(node) {};
 
 	string assembly() {
-		Node* next = node->getFirst();
-
 		string result;
+
+		if (node->getToken().get_type() == CONSTANT) {
+			result += "move ebx, " + node->getToken().get_name() + "\n";
+
+			return result;
+		}
+
+		Node* next = node->getFirst();
 
 		if (next->getName() == "<ÂÛÇÎÂ>") {
 
@@ -162,12 +175,6 @@ public:
 			result += format("call {}\n", idToken->getFirst()->getToken().get_name());
 			result += "mov ebx, eax\n";
 			result += "pop eax";
-
-			return result;
-		}
-
-		if (next->getToken().get_type() == CONSTANT) {
-			result += "move ebx, " + node->getFirst()->getToken().get_name() + "\n";
 
 			return result;
 		}
@@ -188,11 +195,11 @@ public:
 		Node* idToken = node->getFirst();
 
 		string result = idToken->getToken().get_name() + " PROC\n";
-		result += RightOperand(node->getNext()[2]).assembly();
+		result += RightOperand(node->getNext()[2]->getFirst()).assembly();
 		result += "mov eax, ebx\n";
 		result += "pop ebx\n";
 		result += "RET\n";
-		result += idToken->getToken().get_name() + " PROC\n";
+		result += idToken->getToken().get_name() + " ENDP\n";
 
 		return result;
 	}
@@ -222,7 +229,36 @@ public:
 
 	string assembly() {
 		string result = LeftOperand(node->getFirst()).assembly();
+		result += RightOperand(node->getNext()[2]).assembly();
 
+		string sign = node->getNext()[1]->getToken().get_name();
+		
+		result = "cmp eax, ebx\n";
+
+		if (sign == "<") {
+			result += "jl ";
+		}
+
+		if (sign == ">") {
+			result += "jm ";
+		}
+
+		if (sign == "<=") {
+			result += "jle ";
+		}
+
+		if (sign == ">=") {
+			result += "jme ";
+		}
+
+		if (sign == "==") {
+			result += "je ";
+		}
+
+		if (sign == "!=") {
+			result += "jne ";
+		}
+		
 		return result;
 	}
 };
@@ -263,7 +299,7 @@ public:
 		string id2 = "while_end_" + to_string(node->getId());
 
 		string result = id1 + ":\n";
-		result += LogicExpression(node->getFirst()).assembly() + " " + id2 + "\n";
+		result += LogicExpression(node->getFirst()).assembly() + id2 + "\n";
 
 		result += Operation(node->getNext()[1]).assembly();
 		result += id2 + ":\n";
